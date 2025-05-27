@@ -340,6 +340,44 @@
             </div>
         </section>
 
+        <section id="fomento-cofap" class="mb-16">
+            <h2 class="section-title"><span class="mr-2"></span>Comitê de Financiamento à Atividade Produtiva (COFAP)</h2>
+            <p class="text-content mt-4 mb-6">O fomento à atividade produtiva é vital para o dinamismo econômico do Distrito Federal. O Comitê de Financiamento à Atividade Produtiva (COFAP) desempenha um papel central nesse processo, analisando e aprovando propostas de financiamento que resultam na geração de empregos e no aumento da renda regional. Os dados de 2024 e 2025 ilustram o impacto positivo dessas ações de fomento.</p>
+            <h3 class="program-title">Resultados 2024-2025</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 mb-12">
+                <div class="stat-card">
+                    <p class="stat-title">Total de Propostas Aprovadas</p>
+                    <p class="stat-value">558</p>
+                    <p class="stat-description flex items-center justify-center">
+                        <span class="mr-1">&#x2705;</span> 393 (2024) | 165 (2025)
+                    </p>
+                    <div class="chart-container mt-4">
+                        <canvas id="cofapPropostasChart"></canvas>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-title">Total de Empregos Diretos Gerados</p>
+                    <p class="stat-value">5.963</p>
+                    <p class="stat-description flex items-center justify-center">
+                        <span class="mr-1">&#x1F464;</span> 4.577 (2024) | 1.386 (2025)
+                    </p>
+                    <div class="chart-container mt-4">
+                        <canvas id="cofapEmpregosChart"></canvas>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-title">Montante FCO Aprovado</p>
+                    <p class="stat-value">R$ 1,79 bi</p>
+                    <p class="stat-description flex items-center justify-center">
+                        <span class="mr-1">&#x1F4B0;</span> R$ 1,20 bi (2024) | R$ 592 mi (2025)
+                    </p>
+                    <div class="chart-container mt-4">
+                        <canvas id="cofapFcoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="fomento-economico">
             <h2 class="section-title">Fomento Econômico e Geração de Emprego</h2>
 
@@ -829,6 +867,87 @@
                             }
                         }
                     }
+                }
+            }
+        });
+    }
+
+    // COFAP Propostas Chart
+    const cofapPropostasCtx = document.getElementById('cofapPropostasChart')?.getContext('2d');
+    if (cofapPropostasCtx) {
+        new Chart(cofapPropostasCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2024', '2025'],
+                datasets: [
+                    {
+                        label: 'Propostas Aprovadas',
+                        data: [393, 165],
+                        backgroundColor: [chartColors[0], chartColors[1]],
+                        borderRadius: 4,
+                        barPercentage: 0.85,
+                        categoryPercentage: 0.85
+                    }
+                ]
+            },
+            options: defaultChartOptions
+        });
+    }
+    // COFAP Empregos Chart
+    const cofapEmpregosCtx = document.getElementById('cofapEmpregosChart')?.getContext('2d');
+    if (cofapEmpregosCtx) {
+        new Chart(cofapEmpregosCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2024', '2025'],
+                datasets: [
+                    {
+                        label: 'Empregos Diretos Gerados',
+                        data: [4577, 1386],
+                        backgroundColor: [chartColors[0], chartColors[1]],
+                        borderRadius: 4,
+                        barPercentage: 0.85,
+                        categoryPercentage: 0.85
+                    }
+                ]
+            },
+            options: defaultChartOptions
+        });
+    }
+    // COFAP FCO Chart
+    const cofapFcoCtx = document.getElementById('cofapFcoChart')?.getContext('2d');
+    if (cofapFcoCtx) {
+        new Chart(cofapFcoCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2024', '2025'],
+                datasets: [
+                    {
+                        label: 'Montante FCO Aprovado',
+                        data: [1200000000, 592000000],
+                        backgroundColor: [chartColors[0], chartColors[1]],
+                        borderRadius: 4,
+                        barPercentage: 0.85,
+                        categoryPercentage: 0.85
+                    }
+                ]
+            },
+            options: {
+                ...defaultChartOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                if (value >= 1000000000) return 'R$ ' + (value/1000000000).toFixed(2) + ' bi';
+                                if (value >= 1000000) return 'R$ ' + (value/1000000).toFixed(0) + ' mi';
+                                return value;
+                            },
+                            font: { family: 'Inter', size: 11 }
+                        },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: defaultChartOptions.scales.x
                 }
             }
         });
