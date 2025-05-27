@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infográfico SEDET/DF: Programas e Impacto (2020-2025)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- 
+        Chosen Palette: Adaptado de "Energetic & Playful" para profissionalismo.
+        Primary: #2F80ED (Azul Principal)
+        Secondary: #27AE60 (Verde)
+        Accent 1: #F2C94C (Amarelo)
+        Accent 2: #EB5757 (Vermelho/Coral)
+        Background: #F8F9FA (Cinza Claro)
+        Text: #333333 (Cinza Escuro)
+        Chart Colors: ['#2F80ED', '#27AE60', '#F2C94C', '#EB5757', '#BB6BD9', '#F2994A'] (Azul, Verde, Amarelo, Vermelho, Roxo, Laranja)
+
+        Application Structure Plan: Infográfico de página única, rolável. Seções temáticas para apresentar os programas da SEDET/DF, seguindo uma narrativa lógica: Introdução, Panorama de Impacto, Programas de Qualificação e Inclusão, Programas de Fomento Econômico, Programas de Infraestrutura e Suporte, e Conclusão com Desafios e Perspectivas. O objetivo é facilitar a digestão das informações complexas dos relatórios, destacando os principais resultados e metodologias de cada programa, conforme solicitado pelo Memorando Circular.
+
+        Visualization & Content Choices:
+        - Panorama Geral: Grandes números destacados (HTML/CSS).
+        - RENOVA-DF: Gráfico de Linha (Equipamentos/Ano - Chart.js), Cartões de estatísticas. Texto conciso sobre atividades, metodologia, efetividade/desafios, propostas.
+        - Qualifica-DF/Móvel: Cartões de estatísticas (Atendimentos SATE, Ag. Itinerante). Texto.
+        - Preparação DF: Cartões de estatísticas (Meta Alunos, Investimento). Texto.
+        - Fábrica Social: Gráfico de Barras (Itens Produzidos/Ano - Chart.js), Gráfico de Barras (Alunos Matriculados vs. Certificados - Chart.js). Cartões de estatísticas. Texto.
+        - Cesta do Trabalhador: Cartões de estatísticas (Solicitações, Entregas). Texto.
+        - PROSPERA: Gráfico de Donut (Ocupações Novas vs. Mantidas - Chart.js). Cartões de estatísticas. Texto.
+        - EMPREGA-DF: Cartões de estatísticas (Empregos, Faturamento, ICMS). Texto.
+        - DESENVOLVE-DF: Gráfico de Barras (Imóveis Disponibilizados vs. Arrematados - Chart.js). Cartões de estatísticas. Texto.
+        - Fomento ao Empreendedorismo (SUFEM): Cartões de estatísticas. Texto.
+        - Modernização Agências (SATE): Cartões de estatísticas. Texto.
+        - Infraestrutura (SAADE/COAD): Cartões de estatísticas. Texto.
+        - Suporte (COGEP/ULIC): Texto resumido.
+        - Desafios/Perspectivas: Listas HTML estilizadas.
+        Todos os gráficos são Chart.js/Canvas. Justificativa: Escolha das visualizações para melhor representar os tipos de dados (comparação, tendências, proporções) para clareza e engajamento.
+
+        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F9FA;
+            color: #333333;
+            scroll-behavior: smooth;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* Max width for charts */
+            margin-left: auto;
+            margin-right: auto;
+            height: 280px; /* Base height */
+            max-height: 320px; /* Max height */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .chart-container {
+                height: 320px;
+                max-height: 380px;
+            }
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 0.75rem; /* More rounded corners */
+            padding: 1.25rem; /* Adjusted padding */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08); /* Softer shadow */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            min-height: 150px; /* Consistent height */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .stat-title {
+            font-size: 0.9rem;
+            color: #555; /* Slightly darker gray */
+            margin-bottom: 0.5rem;
+        }
+        .stat-value {
+            font-size: 2rem; /* Larger for impact */
+            font-weight: 700;
+            color: #2F80ED; /* Primary blue */
+            line-height: 1.2;
+        }
+        .stat-description {
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 0.3rem;
+        }
+        .section-title {
+            font-size: 2.25rem; /* Larger section titles */
+            font-weight: 700;
+            color: #2F80ED; /* Primary blue */
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid #F2C94C; /* Accent yellow border */
+            text-align: center;
+        }
+        .program-title {
+            font-size: 1.75rem; /* Larger program titles */
+            font-weight: 600;
+            color: #27AE60; /* Secondary green */
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .program-subtitle {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #4F4F4F;
+            margin-bottom: 1rem;
+        }
+        .text-content {
+            font-size: 0.95rem;
+            color: #333333;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        .highlight-blue { color: #2F80ED; font-weight: 600; }
+        .highlight-green { color: #27AE60; font-weight: 600; }
+        .highlight-yellow { color: #F2C94C; font-weight: 600; }
+        .highlight-red { color: #EB5757; font-weight: 600; }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem 2rem; /* More padding */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        .list-disc {
+            padding-left: 1.5rem;
+        }
+        .list-disc li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-gradient-to-r from-[#2F80ED] to-[#2D9CDB] text-white py-12 text-center shadow-xl">
+        <div class="container mx-auto px-6">
+            <h1 class="text-4xl md:text-5xl font-bold mb-3">SEDET/DF: Programas e Impacto</h1>
+            <p class="text-xl md:text-2xl text-yellow-300">Transformando o Desenvolvimento Econômico, Trabalho e Renda no Distrito Federal (2020-2025)</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6 md:p-10 space-y-16">
+        <section id="intro" class="text-center">
+            <p class="text-lg leading-relaxed max-w-full mx-auto">
+                Este infográfico apresenta uma visão consolidada das atividades e do impacto da Secretaria de Estado de Desenvolvimento Econômico, Trabalho e Renda do Distrito Federal (SEDET/DF) entre janeiro de 2020 e maio de 2025. O objetivo é demonstrar, de forma clara e visual, os resultados alcançados pelos principais programas, as metodologias adotadas, os desafios enfrentados e as propostas de aprimoramento, em consonância com as diretrizes do Memorando Circular n.º 1/2025 - SEDET/SEADET.
+            </p>
+        </section>
+
+        <section id="panorama-impacto">
+            <h2 class="section-title">Panorama de Impacto Agregado</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+                <div class="stat-card">
+                    <p class="stat-title">Empregos Diretos (Emprega-DF)</p>
+                    <p class="stat-value">11.165</p>
+                    <p class="stat-description">Vagas preenchidas</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-title">Ocupações (Prospera)</p>
+                    <p class="stat-value">8.979</p>
+                    <p class="stat-description">Geradas e mantidas</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-title">Equipamentos Revitalizados (RENOVA-DF)</p>
+                    <p class="stat-value">2.467</p>
+                    <p class="stat-description">Em 30 RAs</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-title">Atendimentos SATE</p>
+                    <p class="stat-value">1,27M+</p>
+                    <p class="stat-description">Nas Agências do Trabalhador</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="qualificacao-inclusao">
+            <h2 class="section-title">Qualificação Profissional e Inclusão Social</h2>
+            
+            <!-- Centralização dos cards de estatísticas -->
+            <div class="w-full flex justify-center">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8 mb-12">
+                    <div class="stat-card">
+                        <p class="stat-title">Inscritos</p>
+                        <p class="stat-value">623.702</p>
+                        <p class="stat-description"></p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Selecionados</p>
+                        <p class="stat-value">226.147 (36,3%)</p>
+                        <p class="stat-description"></p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Matriculados</p>
+                        <p class="stat-value">127.697 (56,5%)</p>
+                        <p class="stat-description"></p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Certificados</p>
+                        <p class="stat-value">93.411 (79,5%)</p>
+                        <p class="stat-description"></p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Evadidos</p>
+                        <p class="stat-value">15.729 (13,4%)</p>
+                        <p class="stat-description"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="program-title">Nível de Escolaridade</h3>
+                <p class="program-subtitle">Distribuição dos Inscritos por Nível de Escolaridade</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="chart-container">
+                        <canvas id="educationLevelChart"></canvas>
+                    </div>
+                    <div class="text-content">
+                        <p><strong class="highlight-blue">Distribuição por Nível de Escolaridade:</strong></p>
+                        <ul class="list-disc">
+                            <li>Médio Completo: 247.814 (47,2%)</li>
+                            <li>Fundamental Completo: 115.885 (22,07%)</li>
+                            <li>Superior Incompleto: 44.150 (8,41%)</li>
+                            <li>Fundamental Incompleto: 58.900 (11,22%)</li>
+                            <li>Médio Incompleto: 50.431 (9,61%)</li>
+                            <li>Superior Completo: 8.522 (1,62%)</li>
+                        </ul>
+                        <p class="mt-4"><strong class="highlight-green">Análise:</strong> A maioria dos inscritos possui ensino médio completo, seguido por fundamental completo, demonstrando um perfil educacional diversificado entre os participantes dos programas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="program-title">RENOVA-DF (SQP)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8 mb-12">
+                    <div class="stat-card">
+                        <p class="stat-title">Inscritos</p>
+                        <p class="stat-value">284.501</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Selecionados</p>
+                        <p class="stat-value">45.216</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Certificados</p>
+                        <p class="stat-value">23.815</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Cotas Sociais</p>
+                        <p class="stat-value">1.225</p>
+                        <p class="stat-description">Moradores de rua / Imigrantes / Pessoas em situação de vulneráveis</p>
+                    </div>
+                </div>
+                <p class="program-subtitle">Qualificação social e profissional com revitalização de espaços urbanos.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="chart-container">
+                        <canvas id="renovaDFChart"></canvas>
+                    </div>
+                    <div class="text-content">
+                        <p><strong class="highlight-blue">Atividades:</strong> Qualificação em auxiliar de manutenção básica (pedreiro, pintor, etc.) e revitalização de praças, parques e quadras.</p>
+                        <p><strong class="highlight-blue">Indicadores:</strong> 2.467 equipamentos revitalizados em 30 RAs. Pico de 1.134 em 2023.</p>
+                        <p><strong class="highlight-blue">Metodologia:</strong> Treinamento prático integrado à revitalização, módulos de cidadania e empreendedorismo.</p>
+                        <p><strong class="highlight-blue">Efetividade & Desafios:</strong> Alto impacto social duplo. Desafios: orçamento, logística, capacitação de instrutores.</p>
+                        <p><strong class="highlight-blue">Propostas:</strong> Expansão, modernização, busca por parcerias.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3 class="program-title">Qualifica-DF & Qualifica Móvel (SQP & SATE)</h3>
+                    <p class="program-subtitle">Qualificação profissional e inserção no mercado, com foco na descentralização.</p>
+                    <div class="stat-card mb-6">
+                        <p class="stat-title">Atendimentos Agência Itinerante (Qualifica Móvel)</p>
+                        <p class="stat-value">31.000+</p>
+                        <p class="stat-description">Desde 2020</p>
+                    </div>
+                    <div class="text-content">
+                        <p><strong class="highlight-green">Atividades:</strong> Cursos de qualificação, inscrições e orientações via Agências do Trabalhador e unidade móvel, mutirões de emprego.</p>
+                        <p><strong class="highlight-green">Indicadores:</strong> 1,27M+ atendimentos totais SATE (inclui Qualifica).</p>
+                        <p><strong class="highlight-green">Metodologia:</strong> Descentralização (Ag. Itinerante), parcerias estratégicas, foco na empregabilidade.</p>
+                        <p><strong class="highlight-green">Efetividade & Desafios:</strong> Acesso ampliado. Desafios: capacitação de servidores, infraestrutura, alinhamento dos cursos.</p>
+                        <p><strong class="highlight-green">Propostas:</strong> Expandir oferta, fortalecer Ag. Itinerante, melhorar acompanhamento de egressos.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="program-title">Preparação DF (SUFEM)</h3>
+                    <p class="program-subtitle">Nova iniciativa para qualificação para ENEM, vestibulares e concursos.</p>
+                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div class="stat-card">
+                            <p class="stat-title">Meta de Atendimento</p>
+                            <p class="stat-value">10.000</p>
+                            <p class="stat-description">Alunos</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="stat-title">Investimento Previsto</p>
+                            <p class="stat-value">R$ 23,6M</p>
+                        </div>
+                    </div>
+                    <div class="text-content">
+                        <p><strong class="highlight-yellow">Atividades:</strong> Serviços educacionais preparatórios presenciais e gratuitos.</p>
+                        <p><strong class="highlight-yellow">Indicadores:</strong> Em implantação (início 1º sem/2025).</p>
+                        <p><strong class="highlight-yellow">Metodologia:</strong> Parceria com OSC via Chamamento Público, aulas presenciais.</p>
+                        <p><strong class="highlight-yellow">Efetividade & Desafios:</strong> Alto potencial. Desafios: qualidade pedagógica, mobilização, monitoramento, sustentabilidade.</p>
+                        <p><strong class="highlight-yellow">Propostas:</strong> Plena implementação, expansão gradual, monitoramento robusto.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="program-title">Fábrica Social (SIAS)</h3>
+                <p class="program-subtitle">Cursos profissionalizantes e produção de itens têxteis para o GDF.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                    <div class="md:col-span-1 space-y-4">
+                        <div class="stat-card">
+                            <p class="stat-title">Total de Itens Produzidos (2020-Abril/2025)</p>
+                            <p class="stat-value">225.675</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="stat-title">Alunos Certificados (2020-Maio/2025)</p>
+                            <p class="stat-value">3.280</p>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2 chart-container">
+                        <canvas id="fabricaSocialProducaoChart"></canvas>
+                    </div>
+                </div>
+                 <div class="text-content mt-6">
+                    <p><strong class="highlight-red">Atividades:</strong> Cursos (Corte e Costura, Serigrafia, etc.) e produção de uniformes, máscaras, etc.</p>
+                    <p><strong class="highlight-red">Metodologia:</strong> Módulos com certificação progressiva, integração qualificação-produção.</p>
+                    <p><strong class="highlight-red">Efetividade & Desafios:</strong> Agilidade (pandemia), crescimento da produção. Desafios: atualização normativa, expansão territorial.</p>
+                    <p><strong class="highlight-red">Propostas:</strong> Atualizar normas, novas unidades, modernização, novos cursos.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="fomento-economico">
+            <h2 class="section-title">Fomento Econômico e Geração de Emprego</h2>
+
+            <div class="card">
+                <h3 class="program-title">Atendimento Agência do Trabalhador (2020-2025)</h3>
+                <p class="program-subtitle">Distribuição dos Atendimentos por Serviço</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="chart-container">
+                        <canvas id="agenciaTrabalhadorChart"></canvas>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="stat-card">
+                            <p class="stat-title">Total de Atendimentos</p>
+                            <p class="stat-value">1,28M</p>
+                        </div>
+                        <div class="text-content">
+                            <p><strong class="highlight-blue">Distribuição por Serviço:</strong></p>
+                            <ul class="list-disc">
+                                <li>IMO: 945.436 (74%)</li>
+                                <li>Seguro Desemprego: 127.761 (10%)</li>
+                                <li>Carteira do Trabalhador: 86.000 (8%)</li>
+                                <li>CTPS: 12.700 (1%)</li>
+                                <li>Outros (Qualificação/Prospera): 105.720 (7%)</li>
+                            </ul>
+                            <p class="mt-4"><strong class="highlight-green">Análise:</strong> O IMO representa a maior parte dos atendimentos, seguido pelo Seguro Desemprego e Carteira do Trabalhador, demonstrando o foco em serviços essenciais de intermediação e proteção social.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full flex justify-center">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 mb-12 max-w-4xl w-full">
+                <div class="stat-card">
+                        <p class="stat-title">Vagas de emprego captadas</p>
+                        <p class="stat-value">133.023</p>
+                        <p class="stat-description"></p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Quantidade de encaminhamentos</p>
+                        <p class="stat-value">235.761</p>
+                        <p class="stat-description"></p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Quantidade de colocados</p>
+                        <p class="stat-value">24.520 (18%)</p>
+                        <p class="stat-description">*Meta 10% MTE</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="program-title">Microcrédito PROSPERA (SUMCRE & SATE)</h3>
+                <p class="program-subtitle">Crédito acessível para micro e pequenos empreendedores.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="chart-container">
+                        <canvas id="sumcreProsperaChart"></canvas>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="stat-card">
+                            <p class="stat-title">Valor Total Aprovado (Jan/2020-Maio/2025)</p>
+                            <p class="stat-value">R$ 44,1M</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="stat-title">Custo por Ocupação Gerada/Mantida</p>
+                            <p class="stat-value">R$ 7,3 mil</p>
+                        </div>
+                        <div class="text-content">
+                            <p><strong class="highlight-blue">Atividades:</strong> Concessão de crédito para capital de giro, custeio e investimento. Cadastro via Agências do Trabalhador.</p>
+                            <p><strong class="highlight-blue">Indicadores:</strong> 8.979 ocupações geradas/mantidas. Inadimplência controlada.</p>
+                            <p><strong class="highlight-blue">Metodologia:</strong> Crédito progressivo, inclusão financeira ampla, acesso facilitado.</p>
+                            <p><strong class="highlight-blue">Efetividade & Desafios:</strong> Altamente eficaz. Desafio: limitação de recursos financeiros.</p>
+                            <p><strong class="highlight-blue">Propostas:</strong> Ampliar aporte de recursos, aprimorar análise de crédito.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3 class="program-title">EMPREGA-DF (SAADE & SATE)</h3>
+                    <p class="program-subtitle">Benefícios fiscais para empresas que geram empregos.</p>
+                    <div class="stat-card mb-6">
+                        <p class="stat-title">Faturamento Anual Estimado (Empresas Beneficiadas)</p>
+                        <p class="stat-value">R$ 13 Bi</p>
+                    </div>
+                    <div class="text-content">
+                        <p><strong class="highlight-green">Atividades:</strong> Concessão de crédito ICMS, acompanhamento de metas. SATE intermedia vagas.</p>
+                        <p><strong class="highlight-green">Indicadores:</strong> 11.165 empregos diretos, R$ 350M+ em ICMS anual.</p>
+                        <p><strong class="highlight-green">Metodologia:</strong> Incentivos condicionados a investimentos e empregos.</p>
+                        <p><strong class="highlight-green">Efetividade & Desafios:</strong> Retorno significativo. Desafios: engajamento com empresas, fiscalização.</p>
+                        <p><strong class="highlight-green">Propostas:</strong> Fortalecer fiscalização, articular SAADE-SATE.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="program-title">DESENVOLVE-DF (SUPIEC)</h3>
+                    <p class="program-subtitle">Atração de investimentos via concessão de imóveis públicos.</p>
+                    <div class="chart-container mb-6">
+                        <canvas id="supiecDesenvolveChart"></canvas>
+                    </div>
+                     <div class="text-content">
+                        <p><strong class="highlight-yellow">Atividades:</strong> Gestão de CDRU de imóveis, regularização de incentivos, isenção de ONALT.</p>
+                        <p><strong class="highlight-yellow">Indicadores:</strong> 8 editais, 526 imóveis disponibilizados, 9.823 empregos previstos.</p>
+                        <p><strong class="highlight-yellow">Metodologia:</strong> Licitação de imóveis, exigência de PVS, Sistema de Gestão de Incentivos.</p>
+                        <p><strong class="highlight-yellow">Efetividade & Desafios:</strong> Impulsionou atividade econômica. Desafios: complexidade legal, infraestrutura em ADEs.</p>
+                        <p><strong class="highlight-yellow">Propostas:</strong> Manter sistema, implementar "Empreende-DF", acelerar infraestrutura.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="infra-suporte-governanca">
+            <h2 class="section-title">Modernização, Infraestrutura e Governança</h2>
+            <div class="card">
+                <h3 class="program-title">Modernização das Agências do Trabalhador (SATE)</h3>
+                <p class="program-subtitle">Reformas, Agência Itinerante e ações para públicos específicos.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="stat-card">
+                        <p class="stat-title">Agências Reformadas</p>
+                        <p class="stat-value">11</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Inserções Pop. Rua (Mar/2024 - Maio/2025)</p>
+                        <p class="stat-value">30</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Novas Agências em Instalação</p>
+                        <p class="stat-value">5</p>
+                        <p class="stat-description">(Prev. 2º sem/2025)</p>
+                    </div>
+                </div>
+                 <p class="text-content mt-6"><strong class="highlight-blue">Resultados:</strong> Aumento no volume e qualidade do atendimento, alcance de populações vulneráveis. Propostas incluem concluir novas agências e fortalecer a unidade móvel.</p>
+            </div>
+
+            <div class="card">
+                <h3 class="program-title">Desenvolvimento e Manutenção de Infraestrutura (SAADE & SUAG/COAD)</h3>
+                <p class="program-subtitle">Obras em ADEs, gestão de frotas e manutenção predial.</p>
+                 <p class="text-content"><strong class="highlight-green">Resultados:</strong> ~134 mil m² de calçadas (SAADE), +15 obras em ADEs (COAD/2024). Ganhos de eficiência na gestão. Propostas incluem implantação de BIM e frota sustentável.</p>
+            </div>
+            
+            <div class="card">
+                <h3 class="program-title">Suporte Administrativo e Governança (SUAG/COGEP & ULIC)</h3>
+                <p class="program-subtitle">Gestão de RH e processos licitatórios.</p>
+                <p class="text-content"><strong class="highlight-yellow">Resultados:</strong> COGEP processou grande volume de atividades de RH (875 posses, 3.190 férias). ULIC garantiu conformidade legal e operacionalizou aquisições, adaptando-se à Nova Lei de Licitações e focando na digitalização. Propostas da COGEP incluem Planos de Capacitação e Desempenho.</p>
+            </div>
+        </section>
+
+        <section id="desafios-perspectivas">
+            <h2 class="section-title">Desafios Comuns e Perspectivas Futuras</h2>
+            <div class="card">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="program-subtitle text-red-600 font-semibold"><span class="highlight-red">Principais Desafios Enfrentados:</span></h3>
+                        <ul class="list-disc text-content">
+                            <li>Limitações Orçamentárias impactando expansão de programas.</li>
+                            <li>Necessidade de maior Integração de Sistemas de TI e superação de limitações.</li>
+                            <li>Atualização Normativa constante para acompanhar evolução dos programas.</li>
+                            <li>Gestão da Força de Trabalho: sobrecarga e necessidade de capacitação contínua.</li>
+                            <li>Obsolescência de parte da Infraestrutura e frota.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="program-subtitle text-green-600 font-semibold"><span class="highlight-green">Propostas e Perspectivas de Aprimoramento:</span></h3>
+                        <ul class="list-disc text-content">
+                            <li><strong class="highlight-green">Transformação Digital:</strong> Implantação de BIM, plataformas unificadas.</li>
+                            <li><strong class="highlight-green">Expansão e Modernização de Programas:</strong> Atualização normativa, novas unidades (Fábrica Social), implementação do Preparação DF.</li>
+                            <li><strong class="highlight-green">Sustentabilidade:</strong> Frota de veículos sustentáveis, indicadores de sustentabilidade.</li>
+                            <li><strong class="highlight-green">Desenvolvimento da Força de Trabalho:</strong> Planos de capacitação e desempenho.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="text-center mt-12 mb-6">
+            <p class="text-xl leading-relaxed max-w-3xl mx-auto font-semibold text-[#2F80ED]">
+                A SEDET/DF reafirma seu compromisso com a transparência, a eficiência e o bem-estar da população do Distrito Federal, continuando a construir uma economia local mais robusta, inclusiva e sustentável.
+            </p>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white text-center py-8 mt-12">
+        <p>&copy; <span id="currentYear"></span> SEDET/DF - Secretaria de Estado de Desenvolvimento Econômico, Trabalho e Renda.</p>
+        <p class="text-sm text-gray-400">Infográfico gerado com base nos Relatórios de Gestão (Período Jan/2020 - Maio/2025).</p>
+    </footer>
+
+<script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    function formatLabel(str, maxLen = 16) {
+        if (typeof str !== 'string') return str;
+        if (str.length <= maxLen) return str;
+        const words = str.split(' ');
+        let currentLine = '';
+        const lines = [];
+        words.forEach(word => {
+            if ((currentLine + word).length > maxLen && currentLine.length > 0) {
+                lines.push(currentLine.trim());
+                currentLine = word + ' ';
+            } else {
+                currentLine += word + ' ';
+            }
+        });
+        lines.push(currentLine.trim());
+        return lines.length > 1 ? lines : str;
+    }
+    
+    const defaultChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { 
+                position: 'bottom', 
+                labels: { 
+                    font: { family: 'Inter', size: 11 }, // Slightly larger legend font
+                    boxWidth: 18, // Larger legend box
+                    padding: 20 // More padding for legend
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0,0,0,0.8)', // Darker tooltip
+                titleFont: { family: 'Inter', size: 14, weight: 'bold' },
+                bodyFont: { family: 'Inter', size: 12 },
+                padding: 10, // More padding in tooltip
+                cornerRadius: 4, // Rounded corners for tooltip
+                callbacks: {
+                    title: function(tooltipItems) {
+                        const item = tooltipItems[0];
+                        let label = item.chart.data.labels[item.dataIndex];
+                        return Array.isArray(label) ? label.join(' ') : label;
+                    }
+                }
+            }
+        },
+        scales: {
+            y: { 
+                beginAtZero: true, 
+                ticks: { font: { family: 'Inter', size: 11 } }, // Slightly larger tick font
+                grid: { color: 'rgba(0,0,0,0.05)' } // Softer grid lines
+            },
+            x: { 
+                ticks: { 
+                    font: { family: 'Inter', size: 11 },
+                    callback: function(value) {
+                        let label = this.getLabelForValue(value);
+                        if (Array.isArray(label)) return label[0]; // Show first line for x-axis if multiline
+                        return label.length > 12 ? label.substring(0,10) + '...' : label; // Truncate long single labels
+                    },
+                    autoSkip: true,
+                    maxRotation: 0, // No rotation for better readability
+                    minRotation: 0
+                },
+                grid: { display: false } // Hide x-axis grid lines
+            }
+        }
+    };
+    
+    const chartColors = ['#2F80ED', '#27AE60', '#F2C94C', '#EB5757', '#BB6BD9', '#F2994A'];
+
+    // RENOVA-DF Chart
+    const renovaDFCtx = document.getElementById('renovaDFChart')?.getContext('2d');
+    if (renovaDFCtx) {
+        new Chart(renovaDFCtx, {
+            type: 'line',
+            data: {
+                labels: ['2021', '2022', '2023', formatLabel('2024 (parcial)')],
+                datasets: [{
+                    label: 'Equipamentos Revitalizados',
+                    data: [293, 616, 1134, 227],
+                    borderColor: chartColors[0],
+                    backgroundColor: chartColors[0] + '4D', // 30% opacity
+                    tension: 0.3, // Smoother line
+                    fill: true,
+                    pointBackgroundColor: chartColors[0],
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: chartColors[0],
+                    pointRadius: 4, // Smaller points
+                    pointHoverRadius: 6
+                }]
+            },
+            options: defaultChartOptions
+        });
+    }
+
+    // Fábrica Social - Produção Chart
+    const fabricaSocialProducaoCtx = document.getElementById('fabricaSocialProducaoChart')?.getContext('2d');
+    if (fabricaSocialProducaoCtx) {
+        new Chart(fabricaSocialProducaoCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2020', '2022', '2023', '2024', formatLabel('2025 (Abr)')],
+                datasets: [{
+                    label: 'Itens Produzidos Anualmente',
+                    data: [68867, 1666, 28463, 103917, 22763],
+                    backgroundColor: chartColors[1],
+                    borderRadius: 4, // Rounded bars
+                    barPercentage: 0.7, // Thinner bars
+                    categoryPercentage: 0.8
+                }]
+            },
+            options: defaultChartOptions
+        });
+    }
+    
+    // SUMCRE Prospera Chart
+    const sumcreProsperaCtx = document.getElementById('sumcreProsperaChart')?.getContext('2d');
+    if (sumcreProsperaCtx) {
+        new Chart(sumcreProsperaCtx, {
+            type: 'doughnut',
+            data: {
+                labels: [formatLabel('Ocupações Novas'), formatLabel('Ocupações Mantidas')],
+                datasets: [{
+                    label: 'Ocupações Impactadas',
+                    data: [1531, 7448],
+                    backgroundColor: [chartColors[2], chartColors[3]],
+                    borderColor: '#F8F9FA', // Match background for a cleaner look
+                    borderWidth: 3, // Thicker border for separation
+                    hoverOffset: 8 // More pronounced hover effect
+                }]
+            },
+            options: { ...defaultChartOptions, cutout: '65%' } // Slightly larger cutout
+        });
+    }
+
+    // SUPIEC Desenvolve-DF Chart
+    const supiecDesenvolveCtx = document.getElementById('supiecDesenvolveChart')?.getContext('2d');
+    if (supiecDesenvolveCtx) {
+        new Chart(supiecDesenvolveCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2021', '2022', '2023', '2024', '2025'],
+                datasets: [{
+                    label: 'Imóveis Disponibilizados',
+                    data: [526, 0, 0, 0, 0],
+                    backgroundColor: chartColors[2],
+                    borderRadius: 4,
+                    barPercentage: 0.7,
+                    categoryPercentage: 0.8
+                }]
+            },
+            options: defaultChartOptions
+        });
+    }
+
+    // Geographic Distribution Chart
+    const geographicDistributionCtx = document.getElementById('geographicDistributionChart')?.getContext('2d');
+    if (geographicDistributionCtx) {
+        new Chart(geographicDistributionCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'São Sebastião',
+                    'Ceilândia',
+                    'Gama',
+                    'Samambaia',
+                    'Taguatinga',
+                    'Recanto das Emas',
+                    'Planaltina'
+                ],
+                datasets: [{
+                    label: 'Inscrições por Região',
+                    data: [21847, 21736, 17534, 17376, 16937, 14211, 13748],
+                    backgroundColor: chartColors[0],
+                    borderRadius: 4,
+                    barPercentage: 0.7,
+                    categoryPercentage: 0.8
+                }]
+            },
+            options: {
+                ...defaultChartOptions,
+                indexAxis: 'y',
+                plugins: {
+                    ...defaultChartOptions.plugins,
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const percentage = ((value / 623702) * 100).toFixed(2);
+                                return `${value.toLocaleString()} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Número de Inscrições'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Regiões Administrativas'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Education Level Chart
+    const educationLevelCtx = document.getElementById('educationLevelChart')?.getContext('2d');
+    if (educationLevelCtx) {
+        new Chart(educationLevelCtx, {
+            type: 'pie',
+            data: {
+                labels: [
+                    'Médio Completo',
+                    'Fundamental Completo',
+                    'Superior Incompleto',
+                    'Fundamental Incompleto',
+                    'Médio Incompleto',
+                    'Superior Completo'
+                ],
+                datasets: [{
+                    data: [247814, 115885, 44150, 58900, 50431, 8522],
+                    backgroundColor: [
+                        chartColors[0], // Azul
+                        chartColors[1], // Verde
+                        chartColors[2], // Amarelo
+                        chartColors[3], // Vermelho
+                        chartColors[4], // Roxo
+                        chartColors[5]  // Laranja
+                    ],
+                    borderColor: '#F8F9FA',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                ...defaultChartOptions,
+                plugins: {
+                    ...defaultChartOptions.plugins,
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const percentage = ((value / 525702) * 100).toFixed(2);
+                                return `${context.label}: ${value.toLocaleString()} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Atendimento Agência do Trabalhador Chart
+    const agenciaTrabalhadorCtx = document.getElementById('agenciaTrabalhadorChart')?.getContext('2d');
+    if (agenciaTrabalhadorCtx) {
+        new Chart(agenciaTrabalhadorCtx, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    'IMO',
+                    'Seguro Desemprego',
+                    'Carteira do Trabalhador',
+                    'CTPS',
+                    'Outros'
+                ],
+                datasets: [{
+                    data: [945436, 127761, 86000, 12700, 105720],
+                    backgroundColor: [
+                        chartColors[0],
+                        chartColors[1],
+                        chartColors[2],
+                        chartColors[3],
+                        chartColors[4]
+                    ],
+                    borderColor: '#F8F9FA',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                ...defaultChartOptions,
+                cutout: '65%',
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const percentage = ((value / 1280000) * 100).toFixed(2);
+                                return `${value.toLocaleString()} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+</script>
+</body>
+</html>
